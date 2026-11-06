@@ -1,0 +1,52 @@
+# A Docker Swarm sized cluster spread over two nodes. Uses examples/pve-mgr.yml.
+# Guests are created top to bottom, so the managers exist before the workers.
+devices:
+  - type: qemu
+    id: 3001
+    name: swarm-manager1
+    pool: swarm
+    template: qemu-debian13
+    host_node: pve1
+    cores: 2
+    memory_mb: 4096
+    bridges: [vmbr0]
+    ansible_user: ansible
+
+  - type: qemu
+    id: 3002
+    name: swarm-manager2
+    pool: swarm
+    template: qemu-debian13
+    host_node: pve2 # cloned on the builder node, then migrated here
+    cores: 2
+    memory_mb: 4096
+    bridges: [vmbr0]
+    ansible_user: ansible
+
+  - type: qemu
+    id: 3011
+    name: swarm-worker1
+    pool: swarm
+    template: qemu-debian13
+    host_node: pve1
+    cores: 4
+    memory_mb: 8192
+    bridges: [vmbr0]
+    additional_disk:
+      size: 100G
+      storage: local-lvm
+      slot: scsi1
+    ansible_user: ansible
+
+  - type: qemu
+    id: 3012
+    name: swarm-worker2
+    pool: swarm
+    template: qemu-debian13
+    host_node: pve2
+    cores: 4
+    memory_mb: 8192
+    bridges: [vmbr0]
+    additional_disk:
+      size: 100G
+    ansible_user: ansible

@@ -1,0 +1,45 @@
+devices:
+  # Guests on vmbr10 are reached through this one.
+  - type: qemu
+    id: 1101
+    name: lab-gateway
+    pool: lab
+    template: qemu-debian13
+    cores: 2
+    memory_mb: 1024
+    bridges: [vmbr0, vmbr10]
+    role: gateway
+    ansible_user: ansible
+
+  - type: qemu
+    id: 1201
+    name: lab-web1
+    pool: lab
+    template: qemu-debian13
+    host_node: pve2
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr10]
+    tags: [lab, web]
+    # Set on top of the template; what is not written stays as the template has it.
+    hardware:
+      cpu: host
+      balloon_mb: 1024
+      onboot: true
+      startup: order=2,up=30
+    additional_disk:
+      size: 50G
+      discard: true
+    ansible_user: ansible
+
+  - type: lxc
+    id: 1301
+    name: lab-cache
+    pool: lab
+    template: lxc-debian13
+    cores: 1
+    memory_mb: 512
+    bridges: [vmbr10]
+    ansible_user: root
+    ssh_port: 2222
+    proxy_jumps: [ansible@192.0.2.10]

@@ -1,0 +1,17 @@
+# REST API transport. The token is NOT set here: see .env.example.
+transport: api
+
+nodes:
+  pve1:
+    api: https://pve1.example.com:8006
+    # Only needed for `inventory`: the node is the first SSH jump host.
+    ssh: root@pve1.example.com
+
+# Set to false for the self-signed certificate of a fresh install.
+verify_tls: true
+
+defaults:
+  disk_storage: local-lvm
+
+templates:
+  qemu-debian13: 9101

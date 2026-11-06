@@ -1,0 +1,91 @@
+<svg class="rich-terminal" viewBox="0 0 1482 269.6" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-576899482-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-576899482-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-576899482-r1 { fill: #c5c8c6 }
+.terminal-576899482-r2 { fill: #c5c8c6;font-weight: bold }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-576899482-clip-terminal">
+      <rect x="0" y="0" width="1463.0" height="218.6" />
+    </clipPath>
+    <clipPath id="terminal-576899482-line-0">
+    <rect x="0" y="1.5" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-1">
+    <rect x="0" y="25.9" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-2">
+    <rect x="0" y="50.3" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-3">
+    <rect x="0" y="74.7" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-4">
+    <rect x="0" y="99.1" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-5">
+    <rect x="0" y="123.5" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-6">
+    <rect x="0" y="147.9" width="1464" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-576899482-line-7">
+    <rect x="0" y="172.3" width="1464" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1480" height="267.6" rx="8"/><text class="terminal-576899482-title" fill="#c5c8c6" text-anchor="middle" x="740" y="27">pve-mgr&#160;validate</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(9, 41)" clip-path="url(#terminal-576899482-clip-terminal)">
+    
+    <g class="terminal-576899482-matrix">
+    <text class="terminal-576899482-r1" x="0" y="20" textLength="1232.2" clip-path="url(#terminal-576899482-line-0)">┏━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┓</text><text class="terminal-576899482-r1" x="1464" y="20" textLength="12.2" clip-path="url(#terminal-576899482-line-0)">
+</text><text class="terminal-576899482-r1" x="0" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="24.4" y="44.4" textLength="134.2" clip-path="url(#terminal-576899482-line-1)">name&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-576899482-r1" x="170.8" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="195.2" y="44.4" textLength="48.8" clip-path="url(#terminal-576899482-line-1)">type</text><text class="terminal-576899482-r1" x="256.2" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="280.6" y="44.4" textLength="48.8" clip-path="url(#terminal-576899482-line-1)">id&#160;&#160;</text><text class="terminal-576899482-r1" x="341.6" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="366" y="44.4" textLength="85.4" clip-path="url(#terminal-576899482-line-1)">pool&#160;&#160;&#160;</text><text class="terminal-576899482-r1" x="463.6" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="488" y="44.4" textLength="244" clip-path="url(#terminal-576899482-line-1)">source&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-576899482-r1" x="744.2" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="768.6" y="44.4" textLength="48.8" clip-path="url(#terminal-576899482-line-1)">host</text><text class="terminal-576899482-r1" x="829.6" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="854" y="44.4" textLength="61" clip-path="url(#terminal-576899482-line-1)">cores</text><text class="terminal-576899482-r1" x="927.2" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="951.6" y="44.4" textLength="73.2" clip-path="url(#terminal-576899482-line-1)">mem_mb</text><text class="terminal-576899482-r1" x="1037" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r2" x="1061.4" y="44.4" textLength="146.4" clip-path="url(#terminal-576899482-line-1)">bridges&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-576899482-r1" x="1220" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">┃</text><text class="terminal-576899482-r1" x="1464" y="44.4" textLength="12.2" clip-path="url(#terminal-576899482-line-1)">
+</text><text class="terminal-576899482-r1" x="0" y="68.8" textLength="1232.2" clip-path="url(#terminal-576899482-line-2)">┡━━━━━━━━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━┩</text><text class="terminal-576899482-r1" x="1464" y="68.8" textLength="12.2" clip-path="url(#terminal-576899482-line-2)">
+</text><text class="terminal-576899482-r1" x="0" y="93.2" textLength="1232.2" clip-path="url(#terminal-576899482-line-3)">│&#160;net-gateway&#160;│&#160;qemu&#160;│&#160;5001&#160;│&#160;network&#160;│&#160;qemu-debian13&#160;(9101)&#160;│&#160;pve1&#160;│&#160;2&#160;&#160;&#160;&#160;&#160;│&#160;1024&#160;&#160;&#160;│&#160;vmbr0,vmbr20&#160;│</text><text class="terminal-576899482-r1" x="1464" y="93.2" textLength="12.2" clip-path="url(#terminal-576899482-line-3)">
+</text><text class="terminal-576899482-r1" x="0" y="117.6" textLength="1232.2" clip-path="url(#terminal-576899482-line-4)">│&#160;net-app1&#160;&#160;&#160;&#160;│&#160;qemu&#160;│&#160;5101&#160;│&#160;network&#160;│&#160;qemu-debian13&#160;(9101)&#160;│&#160;pve1&#160;│&#160;2&#160;&#160;&#160;&#160;&#160;│&#160;2048&#160;&#160;&#160;│&#160;vmbr20&#160;&#160;&#160;&#160;&#160;&#160;&#160;│</text><text class="terminal-576899482-r1" x="1464" y="117.6" textLength="12.2" clip-path="url(#terminal-576899482-line-4)">
+</text><text class="terminal-576899482-r1" x="0" y="142" textLength="1232.2" clip-path="url(#terminal-576899482-line-5)">│&#160;net-db1&#160;&#160;&#160;&#160;&#160;│&#160;lxc&#160;&#160;│&#160;5102&#160;│&#160;network&#160;│&#160;lxc-debian13&#160;(9201)&#160;&#160;│&#160;pve1&#160;│&#160;2&#160;&#160;&#160;&#160;&#160;│&#160;2048&#160;&#160;&#160;│&#160;vmbr20&#160;&#160;&#160;&#160;&#160;&#160;&#160;│</text><text class="terminal-576899482-r1" x="1464" y="142" textLength="12.2" clip-path="url(#terminal-576899482-line-5)">
+</text><text class="terminal-576899482-r1" x="0" y="166.4" textLength="1232.2" clip-path="url(#terminal-576899482-line-6)">│&#160;net-monitor&#160;│&#160;qemu&#160;│&#160;5103&#160;│&#160;network&#160;│&#160;qemu-debian13&#160;(9101)&#160;│&#160;pve1&#160;│&#160;1&#160;&#160;&#160;&#160;&#160;│&#160;1024&#160;&#160;&#160;│&#160;vmbr20,vmbr0&#160;│</text><text class="terminal-576899482-r1" x="1464" y="166.4" textLength="12.2" clip-path="url(#terminal-576899482-line-6)">
+</text><text class="terminal-576899482-r1" x="0" y="190.8" textLength="1232.2" clip-path="url(#terminal-576899482-line-7)">└─────────────┴──────┴──────┴─────────┴──────────────────────┴──────┴───────┴────────┴──────────────┘</text><text class="terminal-576899482-r1" x="1464" y="190.8" textLength="12.2" clip-path="url(#terminal-576899482-line-7)">
+</text><text class="terminal-576899482-r1" x="1464" y="215.2" textLength="12.2" clip-path="url(#terminal-576899482-line-8)">
+</text>
+    </g>
+    </g>
+</svg>

@@ -1,0 +1,11 @@
+# One VM on the node's main bridge. Every key shown here is required.
+devices:
+  - type: qemu
+    id: 2001
+    name: sandbox
+    pool: sandbox
+    template: qemu-debian13
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr0]
+    ansible_user: ansible

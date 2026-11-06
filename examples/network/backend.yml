@@ -1,0 +1,35 @@
+# Applied second: guests on the private bridge. They get DHCP from net-gateway,
+# which is why it has to be up first, and the inventory reaches them through it.
+devices:
+  - type: qemu
+    id: 5101
+    name: net-app1
+    pool: network
+    template: qemu-debian13
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr20]
+    ansible_user: ansible
+
+  - type: lxc
+    id: 5102
+    name: net-db1
+    pool: network
+    template: lxc-debian13
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr20]
+    ansible_user: root
+
+  # Dual-homed without `role`: on both networks, but nobody's jump host.
+  - type: qemu
+    id: 5103
+    name: net-monitor
+    pool: network
+    template: qemu-debian13
+    cores: 1
+    memory_mb: 1024
+    bridges: [vmbr20, vmbr0]
+    ansible_user: ansible
+    # Reached through these hops instead of through net-gateway.
+    proxy_jumps: [ansible@192.0.2.10, ansible@192.0.2.20]

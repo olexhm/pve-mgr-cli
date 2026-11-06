@@ -1,0 +1,45 @@
+[project]
+name = "pve-mgr"
+version = "0.1.0"
+description = "Declarative Proxmox VE guest management over the REST API or SSH"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "olexhm", email = "olexcours@proton.me" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.14.0",
+    "pydantic-settings>=2.15.0",
+    "pyyaml>=6.0.3",
+    "rich>=15.0.0",
+    "typer>=0.27.3",
+]
+
+[project.scripts]
+pve-mgr = "pve_mgr.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "respx>=0.23.1",
+    "ruff>=0.16.10",
+    "ty>=0.0.85",
+    "types-pyyaml>=6.0.12.20260906",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "PTH", "RET", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

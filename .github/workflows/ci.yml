@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check --output-format=github
+      - run: uv run ruff format --check
+      - run: uv run ty check
+      - run: uv build
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.13", "3.14"]
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run pytest -q
+      - name: Validate examples
+        run: |
+          uv run pve-mgr validate -c examples/minimal/pve-mgr.yml examples/minimal/devices.yml
+          uv run pve-mgr validate -c examples/pve-mgr.yml examples/network/gateway.yml examples/network/backend.yml

@@ -1,0 +1,26 @@
+transport: ssh # or: api
+
+# Keys must be the real Proxmox node names (see: pvesh get /nodes).
+nodes:
+  pve1:
+    ssh: root@pve1
+    api: https://pve1.example.com:8006
+  pve2: root@pve2 # shorthand for {ssh: root@pve2}
+
+# Every call goes through one node; the cluster forwards it where needed.
+# entry_node: pve1   # default: defaults.host_node
+# sudo: true         # default: only when the SSH target is not root@...
+
+defaults:
+  builder_node: pve1
+  host_node: pve1
+  disk_storage: local-lvm
+  migration_storage: local-lvm
+
+templates:
+  qemu-debian13: 9101
+  lxc-debian13: 9201
+
+# Relative paths are resolved against this file's directory.
+inventory: inventory.ini
+known_hosts: ~/.ssh/known_hosts

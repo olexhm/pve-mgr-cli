@@ -1,0 +1,43 @@
+from pve_mgr.models.cluster import Guest
+from pve_mgr.models.config import Config, Defaults, Node, Secrets, TransportKind
+from pve_mgr.models.device import (
+    Bios,
+    BootDisk,
+    Device,
+    DevicesFile,
+    DeviceSpec,
+    Disk,
+    DiskSpec,
+    GuestType,
+    Hardware,
+    Iso,
+    IsoSpec,
+    NicSpec,
+    OsType,
+    Role,
+    ScsiController,
+)
+
+__all__ = [
+    "Bios",
+    "BootDisk",
+    "Config",
+    "Defaults",
+    "Device",
+    "DeviceSpec",
+    "DevicesFile",
+    "Disk",
+    "DiskSpec",
+    "Guest",
+    "GuestType",
+    "Hardware",
+    "Iso",
+    "IsoSpec",
+    "NicSpec",
+    "Node",
+    "OsType",
+    "Role",
+    "ScsiController",
+    "Secrets",
+    "TransportKind",
+]

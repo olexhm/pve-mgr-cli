@@ -1,0 +1,12 @@
+devices:
+  - type: qemu
+    id: 2101
+    name: api-demo
+    pool: demo
+    template: qemu-debian13
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr0]
+    additional_disk:
+      size: 20G # storage comes from defaults.disk_storage, slot defaults to scsi1
+    ansible_user: ansible

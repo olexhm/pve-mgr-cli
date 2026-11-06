@@ -1,0 +1,49 @@
+devices:
+  # An empty VM that boots the Debian installer. Install it from the console;
+  # the next start boots the installed disk.
+  - type: qemu
+    id: 1401
+    name: lab-install
+    pool: lab
+    iso:
+      image: local:iso/debian-13-amd64-netinst.iso
+      disk:
+        size: 20G
+    cores: 2
+    memory_mb: 2048
+    bridges: [vmbr10]
+    tags: [lab]
+    ansible_user: ansible
+
+  # UEFI on q35 with a TPM, and hardware a clone would take from its template.
+  - type: qemu
+    id: 1402
+    name: lab-uefi
+    pool: lab
+    host_node: pve2
+    iso:
+      image: local:iso/debian-13-amd64-netinst.iso
+      tpm: v2.0
+      disk:
+        size: 32G
+        storage: local-lvm
+        bus: scsi
+        ssd: true
+        discard: true
+        iothread: true
+    cores: 4
+    memory_mb: 4096
+    bridges: [vmbr10]
+    hardware:
+      ostype: l26
+      bios: ovmf
+      machine: q35
+      scsihw: virtio-scsi-single
+      cpu: host
+      vga: qxl
+      onboot: true
+      description: Installed by hand from the Debian netinst image
+      options: # any other Proxmox setting, by its own name
+        hotplug: disk,network,usb
+        serial0: socket
+    ansible_user: ansible

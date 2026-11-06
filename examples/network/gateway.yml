@@ -1,0 +1,14 @@
+# Applied first: the router between the uplink (vmbr0) and a private bridge (vmbr20).
+# Uses examples/pve-mgr.yml:
+#   pve-mgr apply examples/network/gateway.yml examples/network/backend.yml
+devices:
+  - type: qemu
+    id: 5001
+    name: net-gateway
+    pool: network
+    template: qemu-debian13
+    cores: 2
+    memory_mb: 1024
+    bridges: [vmbr0, vmbr20] # uplink first, served bridge second
+    role: gateway
+    ansible_user: ansible

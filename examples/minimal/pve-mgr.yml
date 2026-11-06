@@ -1,0 +1,6 @@
+# The smallest working config: one node over SSH, one template.
+nodes:
+  pve1: root@pve1 # key = Proxmox node name, value = SSH target
+
+templates:
+  qemu-debian13: 9101 # name used in devices files -> template VMID
