@@ -15,11 +15,18 @@ class DeviceStatus:
 
 
 def device_statuses(client: PveClient, devices: Sequence[Device]) -> list[DeviceStatus]:
-    """Where each device is and what state it is in; `guest` is None if it does not exist."""
+    """Where each device is and what state it is in; `guest` is None if it does not exist.
+
+    The state is read from each guest, not from the cluster-wide cache (see
+    `PveClient.refresh`), as destroy decides from it whether to stop a guest.
+    """
     guests = client.guests()
     statuses: list[DeviceStatus] = []
     for device in devices:
         guest = guests.get(device.id)
-        address = guest_address(client, device, guest) if guest is not None else None
-        statuses.append(DeviceStatus(device, guest, address))
+        if guest is None:
+            statuses.append(DeviceStatus(device, None))
+            continue
+        guest = client.refresh(guest)
+        statuses.append(DeviceStatus(device, guest, guest_address(client, device, guest)))
     return statuses

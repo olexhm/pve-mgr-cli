@@ -14,7 +14,7 @@ def start(
     """Start stopped guests in file order, each one ready before the next."""
     guests = client.guests()
     for device in devices:
-        guest = _existing(device, guests, report)
+        guest = _existing(client, device, guests, report)
         if guest is None:
             continue
         if guest.running:
@@ -34,7 +34,7 @@ def shutdown(
     """Shut running guests down in reverse file order, so gateways go last."""
     guests = client.guests()
     for device in reversed(devices):
-        guest = _existing(device, guests, report)
+        guest = _existing(client, device, guests, report)
         if guest is not None:
             _shutdown(client, device, guest, report, timeout, force)
 
@@ -50,18 +50,22 @@ def restart(
 ) -> None:
     """Shut everything down in reverse order, then start it all in order."""
     guests = client.guests()
-    existing = [(d, g) for d in devices if (g := _existing(d, guests, report)) is not None]
+    existing = [(d, g) for d in devices if (g := _existing(client, d, guests, report)) is not None]
     for device, guest in reversed(existing):
         _shutdown(client, device, guest, report, timeout, force)
     for device, guest in existing:
         _start(client, device, guest, report, waiter)
 
 
-def _existing(device: Device, guests: dict[int, Guest], report: Report) -> Guest | None:
+def _existing(
+    client: PveClient, device: Device, guests: dict[int, Guest], report: Report
+) -> Guest | None:
+    """The device's guest with its current state, or None if it does not exist."""
     guest = guests.get(device.id)
     if guest is None:
         report(device.name, "does not exist, skipped")
-    return guest
+        return None
+    return client.refresh(guest)
 
 
 def _start(

@@ -27,13 +27,37 @@ class PveClient:
         self._networks: dict[tuple[str, str], IPv4Network | None] = {}
 
     def guests(self) -> dict[int, Guest]:
-        """Every guest in the cluster by VMID, from a single call."""
+        """Every guest in the cluster by VMID, from a single call.
+
+        Good for where guests are and what they are called, but their state can be
+        stale: see `refresh`.
+        """
         path = "/cluster/resources"
         try:
             guests = _GUESTS.validate_python(self._transport.get(path, {"type": "vm"}))
         except ValidationError as exc:
             raise TransportError(f"Unexpected reply from {path}: {exc.errors()[0]['msg']}") from exc
         return {guest.vmid: guest for guest in guests}
+
+    def refresh(self, guest: Guest) -> Guest:
+        """The guest with its state as it is now.
+
+        `/cluster/resources` is served from a cache that pvestatd updates about
+        every 10 seconds: just after a start or a shutdown it still shows the old
+        status, and a guest created since shows as 'unknown', possibly without its
+        name or template flag. Anything that acts on the state reads it here.
+        """
+        path = _path(guest, "status/current")
+        reply = self._transport.get(path)
+        if not isinstance(reply, dict) or "status" not in reply:
+            raise TransportError(f"Unexpected reply from {path}: {reply!r}")
+        update: dict[str, Any] = {
+            "status": str(reply["status"]),
+            "template": bool(reply.get("template")),
+        }
+        if reply.get("name"):
+            update["name"] = str(reply["name"])
+        return guest.model_copy(update=update)
 
     def guest_config(self, guest: Guest) -> dict[str, Json]:
         """The guest's settings as Proxmox stores them (`cores`, `net0`, `scsi1`, ...)."""

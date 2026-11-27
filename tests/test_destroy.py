@@ -146,3 +146,37 @@ def test_cli_destroy_with_yes(cli):
     result = CliRunner().invoke(app, [*args, "--yes"])
     assert result.exit_code == 0, result.output
     assert [call.path for call in transport.executed] == ["/nodes/pve1/qemu/110", "/pools/lab"]
+
+
+def test_a_guest_started_moments_ago_is_stopped_first():
+    """The cluster cache still says 'stopped'; the guest itself says it is running."""
+    transport = lab(["qemu/110"], **{"/nodes/pve2/qemu/110/status/current": {"status": "running"}})
+
+    run(transport, GATEWAY)
+
+    assert transport.executed[:2] == [
+        Call(Method.POST, "/nodes/pve2/qemu/110/status/stop", {}),
+        Call(
+            Method.DELETE,
+            "/nodes/pve2/qemu/110",
+            {"purge": True, "destroy-unreferenced-disks": True},
+        ),
+    ]
+
+
+def test_a_new_template_is_recognised_before_the_cache_knows_it():
+    """Just after `qm template` the cache can lack the name and the template flag."""
+    transport = cluster(
+        guest(111, name=None, status="unknown"),
+        **{
+            "/nodes/pve2/qemu/111/status/current": {
+                "status": "stopped",
+                "name": "web1",
+                "template": 1,
+            }
+        },
+    )
+    with pytest.raises(DestroyError) as exc:
+        find_targets(PveClient(transport), [WEB])
+    assert "VMID 111 is qemu 'web1' (a template)" in str(exc.value)
+    assert transport.executed == []

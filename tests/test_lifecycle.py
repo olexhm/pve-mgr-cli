@@ -73,3 +73,33 @@ def test_restart_stops_in_reverse_then_starts_in_order():
         "110/status/start",
         "111/status/start",
     ]
+
+
+def current(transport: FakeTransport, vmid: int, status: str) -> None:
+    """What the guest itself says, when /cluster/resources has not caught up yet."""
+    transport.replies[f"/nodes/pve2/qemu/{vmid}/status/current"] = {"status": status}
+
+
+def test_shutdown_acts_on_the_guests_state_not_the_cluster_cache():
+    """/cluster/resources lags behind by up to ~10 s and shows new guests as 'unknown'."""
+    transport, client, log = setup("unknown", "running")
+    current(transport, 110, "running")  # just created
+    current(transport, 111, "stopped")  # just shut down
+
+    lifecycle.shutdown(client, [GATEWAY, WEB], report=reporter(log))
+
+    assert transport.executed == [
+        Call(Method.POST, "/nodes/pve2/qemu/110/status/shutdown", {"timeout": 180})
+    ]
+    assert log == ["web1: already stopped", "gw: shutting down"]
+
+
+def test_start_acts_on_the_guests_state_not_the_cluster_cache():
+    transport, client, log = setup("running", "stopped")
+    current(transport, 110, "stopped")  # just shut down
+    current(transport, 111, "running")  # just started
+
+    lifecycle.start(client, [GATEWAY, WEB], report=reporter(log))
+
+    assert transport.executed == [Call(Method.POST, "/nodes/pve2/qemu/110/status/start", {})]
+    assert log == ["gw: starting on pve2", "web1: already running"]
