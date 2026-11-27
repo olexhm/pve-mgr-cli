@@ -1,12 +1,13 @@
 """Destroy guests and the pools they leave empty."""
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 
 from pve_mgr.client import PveClient
 from pve_mgr.errors import DestroyError
 from pve_mgr.models import Device
 from pve_mgr.services.apply import Report
 from pve_mgr.services.status import DeviceStatus, device_statuses
+from pve_mgr.transport import Json
 
 type Forget = Callable[[Sequence[str], int], None]
 
@@ -30,7 +31,22 @@ def find_targets(client: PveClient, devices: Sequence[Device]) -> list[DeviceSta
             "Refusing to destroy guests that do not match the devices file:\n"
             + "\n".join(f"  - {line}" for line in mismatches)
         )
+    protected = [
+        f"VMID {s.device.id} '{s.device.name}'"
+        for s in targets
+        if s.guest is not None and _protected(client.guest_config(s.guest))
+    ]
+    if protected:
+        raise DestroyError(
+            "Refusing to destroy guests with protection enabled; turn it off first "
+            "(Options > Protection, or `qm set` / `pct set <vmid> --protection 0`):\n"
+            + "\n".join(f"  - {line}" for line in protected)
+        )
     return targets
+
+
+def _protected(config: Mapping[str, Json]) -> bool:
+    return str(config.get("protection", 0)).strip() == "1"
 
 
 def destroy(
