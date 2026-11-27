@@ -16,6 +16,20 @@ type Runner = Callable[[Sequence[str]], subprocess.CompletedProcess[str]]
 
 SSH_FAILURE = 255
 _UPID = re.compile(r"UPID:\S+")
+_SSH_ERROR = re.compile(
+    r"^ssh: "
+    r"|^kex_exchange_identification: "
+    r"|^Connection (?:closed|reset|timed out)"
+    r"|^Host key verification failed"
+    r"|^Received disconnect from "
+    r"|^Unable to negotiate with "
+    r"|^Too many authentication failures"
+    r"|^Bad owner or permissions on "
+    r"|^Control socket connect"
+    r"|REMOTE HOST IDENTIFICATION HAS CHANGED"
+    r"|Permission denied \((?:publickey|password|keyboard-interactive|gssapi|hostbased)",
+    re.MULTILINE,
+)
 
 
 def run(argv: Sequence[str]) -> subprocess.CompletedProcess[str]:
@@ -98,6 +112,11 @@ class SshTransport:
         if result.returncode == 0:
             return result.stdout
         detail = result.stderr.strip() or result.stdout.strip() or f"exit {result.returncode}"
-        if result.returncode == SSH_FAILURE:
+        if result.returncode == SSH_FAILURE and _ssh_failed(result.stderr):
             raise TransportError(f"SSH to {self._target} failed: {detail}")
         raise TransportError(f"pvesh {method.pvesh} {path} failed on {self._target}: {detail}")
+
+
+def _ssh_failed(stderr: str) -> bool:
+    """Whether an exit code of 255 came from ssh rather than from pvesh."""
+    return not stderr.strip() or _SSH_ERROR.search(stderr) is not None

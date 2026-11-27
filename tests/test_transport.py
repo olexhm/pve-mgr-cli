@@ -104,6 +104,27 @@ def test_ssh_execute_without_a_task_returns_the_reply():
     ("result", "message"),
     [
         ((255, "", "Permission denied (publickey)."), "SSH to root@pve1 failed: Permission denied"),
+        (
+            (255, "", "root@pve1: Permission denied (publickey,password)."),
+            "SSH to root@pve1 failed: root@pve1: Permission denied",
+        ),
+        (
+            (255, "", "ssh: Could not resolve hostname pve1: Name or service not known"),
+            "SSH to root@pve1 failed: ssh: Could not resolve",
+        ),
+        (
+            (255, "", "Warning: Permanently added 'pve1'.\nHost key verification failed."),
+            "SSH to root@pve1 failed",
+        ),
+        ((255, "", ""), "SSH to root@pve1 failed: exit 255"),
+        (
+            (255, "", "can't remove VM 110 - protection mode enabled"),
+            "pvesh get /x failed on root@pve1: can't remove VM 110 - protection mode enabled",
+        ),
+        (
+            (255, "", "500 Connection timed out to pve2 while proxying"),
+            "pvesh get /x failed on root@pve1: 500 Connection timed out",
+        ),
         ((2, "", "no such VM ('110')"), "pvesh get /x failed on root@pve1: no such VM"),
         ((0, "not json", ""), "did not return JSON"),
     ],
