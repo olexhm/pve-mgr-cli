@@ -19,6 +19,8 @@ from pve_mgr.models import (
 from pve_mgr.transport import Json, Method, Params, Transport
 
 _GUESTS = TypeAdapter(list[Guest])
+# Rarely set QEMU options; `try_lock` deletes the first one a guest does not have.
+_LOCK_PROBE_OPTIONS = ("localtime", "freeze", "tablet", "keyboard")
 
 
 class PveClient:
@@ -66,6 +68,22 @@ class PveClient:
         if not isinstance(reply, dict):
             raise TransportError(f"Unexpected reply from {path}: {reply!r}")
         return reply
+
+    def try_lock(self, guest: Guest) -> bool:
+        """Take and release a QEMU guest's lock with a change that changes nothing."""
+        config = self.guest_config(guest)
+        key = next((key for key in _LOCK_PROBE_OPTIONS if key not in config), None)
+        if key is None:
+            return True
+        try:
+            self._transport.execute(Method.PUT, _path(guest, "config"), {"delete": key})
+        except TransportError as exc:
+            if "can't lock file" in str(exc):
+                return False
+            if "Permission check failed" in str(exc):
+                return True
+            raise
+        return True
 
     def nodes(self) -> set[str]:
         """Names of the cluster's nodes, online or not."""

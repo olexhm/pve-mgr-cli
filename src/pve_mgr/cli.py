@@ -217,6 +217,9 @@ class _Session:
     def waiter(self, wait: bool, timeout: float) -> Waiter | None:
         return Waiter(timeout=timeout) if wait and self.recorder is None else None
 
+    def settle(self) -> lifecycle.Settle | None:
+        return lifecycle.Settle() if self.recorder is None else None
+
     def finish(self) -> None:
         if self.recorder is not None:
             _render_calls(self.recorder.planned)
@@ -269,7 +272,12 @@ def shutdown(
     """Shut running guests down cleanly, in reverse order."""
     session = _Session(devices, config, dry_run)
     lifecycle.shutdown(
-        session.client, session.devices, report=_report, timeout=shutdown_timeout, force=force
+        session.client,
+        session.devices,
+        report=_report,
+        timeout=shutdown_timeout,
+        force=force,
+        settle=session.settle(),
     )
     session.finish()
 
@@ -293,6 +301,7 @@ def restart(
         waiter=session.waiter(wait, timeout),
         timeout=shutdown_timeout,
         force=force,
+        settle=session.settle(),
     )
     session.finish()
 
