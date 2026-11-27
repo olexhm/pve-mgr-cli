@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from pve_mgr.errors import TransportError
@@ -30,5 +31,29 @@ class FakeTransport:
                 reply = self.replies[key]
                 return reply(call) if callable(reply) else reply
         if call.method is Method.GET:
+            if call.path == "/nodes":
+                return [{"node": node, "status": "online"} for node in DEFAULT_NODES]
+            if (current := self._current_from_resources(call.path)) is not None:
+                return current
             raise TransportError(f"no fake reply for GET {call.path}")
         return None
+
+    def _current_from_resources(self, path: str) -> Json:
+        """`status/current` agrees with `/cluster/resources` unless a test says otherwise."""
+        match = _STATUS_CURRENT.match(path)
+        resources = self.replies.get("/cluster/resources")
+        if match is None or not isinstance(resources, list):
+            return None
+        for entry in resources:
+            if (entry.get("node"), entry.get("type"), str(entry.get("vmid"))) == match.groups():
+                current = {"vmid": entry["vmid"], "status": entry["status"]}
+                if entry.get("name"):
+                    current["name"] = entry["name"]
+                if entry.get("template"):
+                    current["template"] = 1
+                return current
+        return None
+
+
+DEFAULT_NODES = ("pve1", "pve2")
+_STATUS_CURRENT = re.compile(r"^/nodes/([^/]+)/(qemu|lxc)/(\d+)/status/current$")

@@ -56,7 +56,14 @@ def build_plan(client: PveClient, devices: Sequence[Device]) -> Plan:
         for device in devices
         if device.id in guests
     }
-    return make_plan(devices, guests, configs, client.pools(), _isos(client, devices, guests))
+    return make_plan(
+        devices,
+        guests,
+        configs,
+        client.pools(),
+        _isos(client, devices, guests),
+        nodes=client.nodes(),
+    )
 
 
 def _isos(
@@ -83,6 +90,7 @@ def make_plan(
     configs: Mapping[int, Mapping[str, Json]],
     pools: set[str],
     isos: AbstractSet[tuple[str, str]] = frozenset(),
+    nodes: AbstractSet[str] | None = None,
 ) -> Plan:
     entries: list[PlanEntry] = []
     for device in devices:
@@ -97,9 +105,25 @@ def make_plan(
     to_create = [entry.device for entry in entries if entry.action is Action.CREATE]
     missing_pools = dict.fromkeys(d.pool for d in to_create if d.pool not in pools)
     problems = dict.fromkeys(
-        problem for device in to_create if (problem := _source_problem(device, guests, isos))
+        [
+            *(problem for device in to_create for problem in _node_problems(device, nodes)),
+            *(p for device in to_create if (p := _source_problem(device, guests, isos))),
+        ]
     )
     return Plan(tuple(entries), tuple(missing_pools), tuple(problems))
+
+
+def _node_problems(device: Device, nodes: AbstractSet[str] | None) -> list[str]:
+    """The nodes a new guest is built or placed on that the cluster does not have."""
+    if nodes is None:
+        return []
+    wanted = dict.fromkeys([device.builder_node, device.host_node])
+    known = ", ".join(sorted(nodes)) or "none"
+    return [
+        f"node '{node}' is not in the cluster (its nodes: {known})"
+        for node in wanted
+        if node not in nodes
+    ]
 
 
 def _source_problem(

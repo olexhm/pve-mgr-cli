@@ -210,3 +210,19 @@ def test_disk_settings_are_compared_when_written():
         {"lab"},
     )
     assert plan.entries[0].action is Action.UNCHANGED
+
+
+def test_nodes_of_a_new_guest_must_be_in_the_cluster():
+    plan = make_plan([device()], {9101: TEMPLATE}, {}, pools={"lab"}, nodes={"pve1"})
+    assert plan.problems == ("node 'pve2' is not in the cluster (its nodes: pve1)",)
+
+    plan = make_plan([device(builder_node="pve3", host_node="pve3")], {}, {}, set(), nodes=set())
+    assert plan.problems[0] == "node 'pve3' is not in the cluster (its nodes: none)"
+
+    plan = make_plan([device()], {9101: TEMPLATE}, {}, pools={"lab"}, nodes={"pve1", "pve2"})
+    assert plan.problems == ()
+
+
+def test_nodes_of_existing_guests_are_not_checked():
+    plan = make_plan([device()], {110: guest()}, {110: CONFIG}, pools={"lab"}, nodes={"pve1"})
+    assert plan.problems == ()

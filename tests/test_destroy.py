@@ -25,6 +25,8 @@ def lab(members: list[str], **replies) -> FakeTransport:
         guest(111, name="web1"),
         **{
             "/pools/lab": {"members": [{"id": member} for member in members]},
+            "/nodes/pve2/qemu/110/config": {"name": "gw"},
+            "/nodes/pve2/qemu/111/config": {"name": "web1"},
             "/nodes/pve2/qemu/111/agent/network-get-interfaces": AGENT,
             "/nodes/pve2/network/vmbr0": {"cidr": "192.0.2.1/24"},
         }
@@ -125,7 +127,10 @@ def test_known_hosts_failure_is_reported(tmp_path: Path):
 def cli(config_path, write_devices, monkeypatch):
     transport = cluster(
         guest(110, name="web1", node="pve1", status="stopped"),
-        **{"/pools/lab": {"members": [{"id": "qemu/110"}]}},
+        **{
+            "/pools/lab": {"members": [{"id": "qemu/110"}]},
+            "/nodes/pve1/qemu/110/config": {"name": "web1"},
+        },
     )
     monkeypatch.setattr("pve_mgr.cli.build_transport", lambda config: transport)
     monkeypatch.setattr("pve_mgr.cli.KnownHosts.forget", lambda self, hosts, port=22: None)
@@ -146,3 +151,56 @@ def test_cli_destroy_with_yes(cli):
     result = CliRunner().invoke(app, [*args, "--yes"])
     assert result.exit_code == 0, result.output
     assert [call.path for call in transport.executed] == ["/nodes/pve1/qemu/110", "/pools/lab"]
+
+
+def test_a_guest_started_moments_ago_is_stopped_first():
+    """The cluster cache still says 'stopped'; the guest itself says it is running."""
+    transport = lab(["qemu/110"], **{"/nodes/pve2/qemu/110/status/current": {"status": "running"}})
+
+    run(transport, GATEWAY)
+
+    assert transport.executed[:2] == [
+        Call(Method.POST, "/nodes/pve2/qemu/110/status/stop", {}),
+        Call(
+            Method.DELETE,
+            "/nodes/pve2/qemu/110",
+            {"purge": True, "destroy-unreferenced-disks": True},
+        ),
+    ]
+
+
+def test_a_new_template_is_recognised_before_the_cache_knows_it():
+    """Just after `qm template` the cache can lack the name and the template flag."""
+    transport = cluster(
+        guest(111, name=None, status="unknown"),
+        **{
+            "/nodes/pve2/qemu/111/status/current": {
+                "status": "stopped",
+                "name": "web1",
+                "template": 1,
+            }
+        },
+    )
+    with pytest.raises(DestroyError) as exc:
+        find_targets(PveClient(transport), [WEB])
+    assert "VMID 111 is qemu 'web1' (a template)" in str(exc.value)
+    assert transport.executed == []
+
+
+def test_protected_guests_are_refused_before_anything_is_stopped():
+    """Proxmox only refuses to delete a protected guest after it has been stopped."""
+    transport = lab(
+        ["qemu/110", "qemu/111"],
+        **{"/nodes/pve2/qemu/111/config": {"name": "web1", "protection": 1}},
+    )
+    with pytest.raises(DestroyError) as exc:
+        run(transport, GATEWAY, WEB)
+    assert "protection enabled" in str(exc.value)
+    assert "VMID 111 'web1'" in str(exc.value) and "VMID 110" not in str(exc.value)
+    assert transport.executed == []
+
+
+def test_protection_turned_off_does_not_block():
+    transport = lab(["qemu/110"], **{"/nodes/pve2/qemu/110/config": {"protection": 0}})
+    run(transport, GATEWAY)
+    assert Call(Method.DELETE, "/pools/lab", {}) in transport.executed
