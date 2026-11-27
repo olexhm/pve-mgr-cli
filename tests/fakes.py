@@ -31,6 +31,8 @@ class FakeTransport:
                 reply = self.replies[key]
                 return reply(call) if callable(reply) else reply
         if call.method is Method.GET:
+            if call.path == "/nodes":
+                return [{"node": node, "status": "online"} for node in DEFAULT_NODES]
             if (current := self._current_from_resources(call.path)) is not None:
                 return current
             raise TransportError(f"no fake reply for GET {call.path}")
@@ -53,4 +55,5 @@ class FakeTransport:
         return None
 
 
+DEFAULT_NODES = ("pve1", "pve2")
 _STATUS_CURRENT = re.compile(r"^/nodes/([^/]+)/(qemu|lxc)/(\d+)/status/current$")

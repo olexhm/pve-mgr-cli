@@ -67,6 +67,13 @@ class PveClient:
             raise TransportError(f"Unexpected reply from {path}: {reply!r}")
         return reply
 
+    def nodes(self) -> set[str]:
+        """Names of the cluster's nodes, online or not."""
+        reply = self._transport.get("/nodes")
+        if not isinstance(reply, list):
+            raise TransportError(f"Unexpected reply from /nodes: {reply!r}")
+        return {str(node["node"]) for node in reply if isinstance(node, dict) and "node" in node}
+
     def pools(self) -> set[str]:
         reply = self._transport.get("/pools")
         if not isinstance(reply, list):

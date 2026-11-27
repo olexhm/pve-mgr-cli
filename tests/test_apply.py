@@ -306,3 +306,10 @@ def test_missing_iso_blocks_apply_before_any_change(content):
     with pytest.raises(ApplyError, match=r"ISO 'local:iso/debian.iso' not found on pve2"):
         run(transport, iso_device())
     assert transport.executed == []
+
+
+def test_unknown_node_blocks_apply_before_any_change():
+    transport = cluster(TEMPLATE, **{"/nodes": [{"node": "pve1", "status": "online"}]})
+    with pytest.raises(ApplyError, match="node 'pve2' is not in the cluster"):
+        run(transport, device())
+    assert transport.executed == []
